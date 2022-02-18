@@ -1,0 +1,144 @@
+<!-- 1.00 Pset 1.4 ------------------------>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Semi-realtime MBTA mapping</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.11.0/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v1.11.0/mapbox-gl.css" rel="stylesheet" />
+<style>
+  body { margin: 0; padding: 0; }
+  #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+
+.map-overlay {
+  position: absolute;
+  left: 1%;
+  padding: 2% 2%;
+  font-size: 1.6em;
+  font-weight: bold;
+  color: white;
+  background-color: black;
+  font-family: Helvetica, Verdana, sans-serif;
+}
+.map-overlay-sub {
+  position: absolute;
+  left: 1%;
+  top: 8%;
+  padding: 2% 2%;
+  color: white;
+  background-color: black;
+  font-size: 1em;
+  font-family: Helvetica, Verdana, sans-serif;
+}
+ 
+</style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="map-overlay top">
+    MBTA BUS ROUTE 1 TRACKING 
+  </div>
+  <div class = "map-overlay-sub">
+    Please allow around 15 seconds between location updates
+  </div>
+
+  <script>
+  var run = async function(){
+      // request bus data
+      var locations = await getBusLocations();
+      console.log(new Date());
+      
+      var location = [];
+        locations.forEach(function org(bus){
+          var id = bus.id;
+          var lat = bus.attributes.latitude;
+          var lng = bus.attributes.longitude;
+          var units = location.push(id,lng,lat);    
+        });
+      return location;
+    }
+
+  async function getBusLocations(){
+      const url='https://api-v3.mbta.com/vehicles?filter[route]=1&include=trip';
+      const response = await fetch(url);
+      const json = await response.json();
+      return json.data;
+  }
+    
+    // api token
+    mapboxgl.accessToken = 'pk.eyJ1Ijoic29mdGV4cGVyaW1lbnQiLCJhIjoiY2tjMngyZm9rMDFvajJzczJ3aWo0bnh6aiJ9.Bc_qK9Xf8SFBXkFM_x2gpg';
+
+    // map instance
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [-71.0906, 42.3616], //center on MIT campus
+        zoom: 12
+    });
+    var marker0 = new mapboxgl.Marker()
+        .setLngLat([-71.0906, 42.3616])
+        .addTo(map)
+
+  
+    // create map markers
+    var marker1 = new mapboxgl.Marker({color: '#fbc32c'})
+    var marker2 = new mapboxgl.Marker({color: '#fbc32c'})
+    var marker3 = new mapboxgl.Marker({color: '#fbc32c'})
+    var marker4 = new mapboxgl.Marker({color: '#fbc32c'})
+    var marker5 = new mapboxgl.Marker({color: '#fbc32c'})
+    var marker6 = new mapboxgl.Marker({color: '#fbc32c'})
+    var marker7 = new mapboxgl.Marker({color: '#fbc32c'})
+    var marker8 = new mapboxgl.Marker({color: '#fbc32c'})
+
+    // animate marker
+    var walker = async function(wherebuses){
+          var bus_loc = await wherebuses;
+          marker1.setLngLat([bus_loc[1],bus_loc[2]]);
+          marker1.addTo(map);
+          marker2.setLngLat([bus_loc[4],bus_loc[5]]);
+          marker2.addTo(map);
+          marker3.setLngLat([bus_loc[7],bus_loc[8]]);
+          marker3.addTo(map);
+          console.log('Buses available: '+ spots.length/3)
+          if (spots.length<9){
+            console.log('Less than 3 buses, not enough buses to be mapped');
+          }          
+          if (spots.length>9){
+          marker4.setLngLat([bus_loc[10],bus_loc[11]]);
+          marker4.addTo(map);
+          }
+          if (spots.length>12){
+            marker5.setLngLat([bus_loc[13],bus_loc[14]]);
+            marker5.addTo(map);
+            }
+          if (spots.length>15){
+            marker6.setLngLat([bus_loc[16],bus_loc[17]]);
+            marker6.addTo(map);
+          }
+          if (spots.length>18){
+            marker7.setLngLat([bus_loc[19],bus_loc[20]]);
+            marker7.addTo(map);
+            console.log('More than six buses');
+          }
+          if (spots.length>21){
+            marker8.setLngLat([bus_loc[22],bus_loc[23]]);
+            marker8.addTo(map);
+            console.log('More than seven buses');
+          }
+          if (spots.length>24){
+            console.log('Not showing all buses');
+          }
+          move() //recall
+        }
+    var spots = {};
+    async function move(){
+      spots = await run();
+      setTimeout(async function() {await walker(spots);}, 15000); // can't do too often, will get banned
+    }
+    move()
+  //'https://api-v3.mbta.com/vehicles?filter[route]=1&include=trip'
+ </script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!-- -------------------------------- -->
+<!-- -----1.00 Pset 1.3------- -->
+<!-- -------------------------------- -->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Add a default marker</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.11.0/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v1.11.0/mapbox-gl.css" rel="stylesheet" />
+<style>
+  body { margin: 0; padding: 0; }
+  #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+
+.map-overlay {
+  position: absolute;
+  left: 0;
+  padding: 10px;
+}
+ 
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div class="map-overlay top">
+  <button style="font-size: 2em" onclick="move()">
+    Show Route
+  </button>
+</div>
+ 
+<script>
+  // api token
+  mapboxgl.accessToken = 'pk.eyJ1Ijoic29mdGV4cGVyaW1lbnQiLCJhIjoiY2tjMngyZm9rMDFvajJzczJ3aWo0bnh6aiJ9.Bc_qK9Xf8SFBXkFM_x2gpg';
+
+  // map instance
+  var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: [-71.104081, 42.365554],
+      zoom: 12
+  });
+
+  // map marker
+  var marker = new mapboxgl.Marker()
+      .setLngLat([-71.118124, 42.373259])
+      .addTo(map);
+
+  const busStops = [
+      [-71.118124, 42.373259], 
+      [-71.115202, 42.372401],
+      [-71.11457, 42.374685],
+      [-71.112665, 42.373954],
+      [-71.109589, 42.372755],
+      [-71.106979, 42.371712],
+      [-71.104598, 42.370776],
+      [-71.102797, 42.370062],
+      [-71.100745, 42.369251],
+      [-71.09915, 42.368617],
+      [-71.095569, 42.367208],
+      [-71.09133, 42.365535],
+      [-71.085841,42.362498],
+      [-71.087704,42.363498]
+  ];
+
+  // animate marker
+  let counter = 0;
+
+  var walker = function(){
+        if(counter >= busStops.length) return;
+        marker.setLngLat(busStops[counter]); //set marker to bus stop
+        counter++; //inc counter
+        move(); //recall
+      }
+
+  function move(){
+    setTimeout(walker, 1000); // can't do too often, will get banned
+  }
+
+</script>
+ 
+</body>
+</html>
